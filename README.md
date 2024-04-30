@@ -2,7 +2,6 @@
 選択したゲームオブジェクトを[AssetBundle](https://docs.unity3d.com/ja/2022.3/Manual/AssetBundlesIntro.html)にビルドし、圧縮状態と非圧縮状態のサイズを比較します。
 
 ## 既知のバグ
-* ビルド時に`IPreprocessCallbackBehaviour`が走りません ([GitHub](https://github.com/KisaragiEffective/ReportAssetBundleSize/issues/2))。
 * VPMのパッケージとしてインストールできません ([GitHub](https://github.com/KisaragiEffective/ReportAssetBundleSize/issues/7))。
 
 ## インストール方法
