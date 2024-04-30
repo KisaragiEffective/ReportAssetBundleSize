@@ -3,7 +3,13 @@
 
 ## 既知のバグ
 * ビルド時に`IPreprocessCallbackBehaviour`が走りません ([GitHub](https://github.com/KisaragiEffective/ReportAssetBundleSize/issues/2))。
-* UPMやVPMのパッケージとしてインストールできません ([GitHub](https://github.com/KisaragiEffective/ReportAssetBundleSize/issues/3))。
+* VPMのパッケージとしてインストールできません ([GitHub](https://github.com/KisaragiEffective/ReportAssetBundleSize/issues/7))。
+
+## インストール方法
+* Gitがインストールされている場合、UPMとしてインストールします。
+  1. 画面上のツールバーから`Window > PackageManager`を開きます。
+  2. \[+\]から「Add package from Git URL」を選択します。
+  3. URLに`https://github.com/KisaragiEffective/ReportAssetBundleSize.git` を指定します。
 
 ## ライセンス
 MIT License
