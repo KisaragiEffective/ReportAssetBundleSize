@@ -12,6 +12,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using VRC.SDK3.Avatars.Components;
 using VRC.SDK3A.Editor;
+using VRC.SDKBase.Editor.BuildPipeline;
 
 namespace ReportAssetBundleSize.Editor
 {
@@ -55,11 +56,13 @@ namespace ReportAssetBundleSize.Editor
 
             void ClickEvent()
             {
+                var ad = (buildAvatarToCheck.value as VRCAvatarDescriptor)!.gameObject;
                 if (callPreBuiltHook.value)
                 {
-                    // blocker: ボタンのクロージャがasyncを受け取るように見えないからスピンロックしようとしたらエディタのメインスレッドをブロックしてしまって死ぬ
-                    // しかし、VRCSDKのbuildもbuildAndUploadもTaskを返してくる :blob_frustrated2:
-                    throw new NotImplementedException("VRCSDK call integration is not supported yet");
+                    if (!VRCBuildPipelineCallbacks.OnPreprocessAvatar(ad))
+                    {
+                        throw new Exception("some of VRCSDK callback reports failure");
+                    }
                 }
                 
                 if (buildAvatarToCheck.value is null)
@@ -73,8 +76,7 @@ namespace ReportAssetBundleSize.Editor
                 {
                     Directory.CreateDirectory(temporaryDirectory);
                 }
-
-                var ad = (buildAvatarToCheck.value as VRCAvatarDescriptor)!;
+                
                 // パスが`**/*.prefab`の形式じゃないと例外を吐く。知るかよ！
                 var localPath = AssetDatabase.GenerateUniqueAssetPath(temporaryDirectory + "/" + ad.gameObject.name + ".prefab");
                 {
