@@ -1,0 +1,17 @@
+{
+  "name": "io.github.kisaragieffective.report-asset-bundle-size",
+  "version": "0.1.0",
+  "description": "Reports how GameObject are large on the built AssetBundles.",
+  "displayName": "ReportAssetBundleSize",
+  "unity": "2022.3",
+  "author": {
+    "name": "Kisaragi Marine",
+    "email": "kisaragi.marine@gmail.com",
+    "url": "https://github.com/kisaragieffective"
+  },
+  "dependencies": {
+    "com.vrchat.avatars": "3.5.0"
+  },
+  "keywords": ["assetbundle", "AssetBundle", "size"],
+  "license": "MIT"
+}
