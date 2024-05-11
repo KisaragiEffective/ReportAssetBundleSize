@@ -3,5 +3,12 @@
   "references": [
     "GUID:b906909fcc54f634db50f2cad0f988d9",
     "GUID:6e9c6119ac4eb334284fb7b4bc6d1f05"
+  ],
+  "versionDefines": [
+    {
+      "name": "nadena.dev.ndmf",
+      "define": "REPORT_ASSET_BUNDLE_SIZE_NDMF",
+      "expression": ""
+    }
   ]
 }
