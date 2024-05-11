@@ -34,7 +34,12 @@ namespace ReportAssetBundleSize.Editor
             callPreBuiltHook.SetEnabled(false);
             var compressedSize = new TextField("Compressed size") { value = "???", isReadOnly = true };
             var decompressedSize = new TextField("Decompressed size") { value = "???", isReadOnly = true };
-
+            var preserveBuiltBundles = new Toggle("Preserve built bundles")
+            {
+                tooltip = "Preserves build artifact if checked. Otherwise it will be deleted", value = false,
+            };
+            rootVisualElement.Add(preserveBuiltBundles);
+            
             var b = new Button(ClickEvent);
             var q = new HelpBox("調べるためにはアバターをセットしてください", HelpBoxMessageType.Error)
             {
@@ -79,7 +84,14 @@ namespace ReportAssetBundleSize.Editor
                 }
 
                 Debug.Log("build");
-                var temporaryDirectory = "Assets/ZZZ_GeneratedAssets";
+                var randomGUID = Guid.NewGuid().ToString();
+                var baseDir = "Assets/ReportAssetBundleSize__Gen";
+                if (!Directory.Exists(baseDir))
+                {
+                    Directory.CreateDirectory(baseDir);
+                }
+                
+                var temporaryDirectory = baseDir + "/" + randomGUID;
                 if (!Directory.Exists(temporaryDirectory))
                 {
                     Directory.CreateDirectory(temporaryDirectory);
@@ -99,6 +111,13 @@ namespace ReportAssetBundleSize.Editor
                 Build("Compressed", BuildAssetBundleOptions.ChunkBasedCompression, in compressedSize);
                 // TODO: だいぶ頭悪い可能性がある
                 Build("Decompressed", BuildAssetBundleOptions.UncompressedAssetBundle, in decompressedSize);
+                if (!preserveBuiltBundles.value)
+                {
+                    var di = new DirectoryInfo(temporaryDirectory);
+                    // metaファイルを消さないと文句を言ってくる
+                    File.Delete(temporaryDirectory + "/../" + di.Name + ".meta");
+                    di.Delete(true);
+                }
                 return;
 
                 void Build(string assetBundleName, BuildAssetBundleOptions opts, in TextField write)
