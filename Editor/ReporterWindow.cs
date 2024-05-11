@@ -56,7 +56,15 @@ namespace ReportAssetBundleSize.Editor
 
             void ClickEvent()
             {
-                var ad = (buildAvatarToCheck.value as VRCAvatarDescriptor)!.gameObject;
+                var original = (buildAvatarToCheck.value as VRCAvatarDescriptor)!.gameObject;
+                #if REPORT_ASSET_BUNDLE_SIZE_NDMF
+                // クローンすることでNDMFプラグインによって元々のゲームオブジェクトが破壊されることを防ぐ
+                var ad = GameObject.Instantiate(original);
+                #else
+                // ReSharper disable once InlineTemporaryVariable
+                var ad = original;
+                #endif
+                
                 if (callPreBuiltHook.value)
                 {
                     if (!VRCBuildPipelineCallbacks.OnPreprocessAvatar(ad))
