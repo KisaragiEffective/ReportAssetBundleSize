@@ -10,9 +10,11 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+#if REPORT_ASSET_BUNDLE_SIZE_VRCSDK3A
 using VRC.SDK3.Avatars.Components;
-using VRC.SDK3A.Editor;
 using VRC.SDKBase.Editor.BuildPipeline;
+#endif
+using Object = UnityEngine.Object;
 
 namespace ReportAssetBundleSize.Editor
 {
@@ -27,36 +29,79 @@ namespace ReportAssetBundleSize.Editor
 
         private void CreateGUI()
         {
-            var buildAvatarToCheck = new ObjectField("Game Object to check")
-                { objectType = typeof(VRCAvatarDescriptor) };
             var callPreBuiltHook = new Toggle("Call VRCSDK hooks")
                 { tooltip = "do you want NDMF or like-wise tools to run?", value = false };
+            #if REPORT_ASSET_BUNDLE_SIZE_VRCSDK3A
             callPreBuiltHook.SetEnabled(false);
+            callPreBuiltHook.tooltip += " (This requires VRCSDK installation)";
+            #endif
+            var buildAvatarToCheck = new ObjectField("Game Object to check") { objectType = typeof(GameObject) };
+            buildAvatarToCheck.RegisterValueChangedCallback(cb =>
+            {
+                Debug.Log($"previous: {cb.previousValue}");
+                var current = cb.newValue;
+                Debug.Log($"new: {current}");
+                {
+#if REPORT_ASSET_BUNDLE_SIZE_VRCSDK3A
+                    if ((buildAvatarToCheck.value as GameObject)?.TryGetComponent<VRCAvatarDescriptor>(out _) ?? false)
+                    {
+                        // TODO: distinct whether the GO has VRC-AD
+                        callPreBuiltHook.style.display = DisplayStyle.Flex;
+                    }
+                    else
+#endif
+                    {
+                        callPreBuiltHook.style.display = DisplayStyle.None;
+                    }
+                }
+            });
             var compressedSize = new TextField("Compressed size") { value = "???", isReadOnly = true };
             var decompressedSize = new TextField("Decompressed size") { value = "???", isReadOnly = true };
 
             var b = new Button(ClickEvent);
-            var q = new HelpBox("調べるためにはアバターをセットしてください", HelpBoxMessageType.Error)
+            b.SetEnabled(false);
+            
+            var absentAvatarError = new HelpBox("調べるためにはアバターをセットしてください", HelpBoxMessageType.Error)
             {
                 style =
                 {
-                    display = DisplayStyle.None
+                    display = DisplayStyle.Flex
                 }
             };
+            buildAvatarToCheck.RegisterValueChangedCallback(cb =>
+            {
+                var absent = cb.newValue == null;
+                absentAvatarError.style.display = absent ? DisplayStyle.Flex : DisplayStyle.None;
+                b.SetEnabled(!absent);
+            });
+
             rootVisualElement.Add(buildAvatarToCheck);
             rootVisualElement.Add(compressedSize);
             rootVisualElement.Add(decompressedSize);
             rootVisualElement.Add(callPreBuiltHook);
             // TODO: toggle visibility
-            rootVisualElement.Add(q);
+            rootVisualElement.Add(absentAvatarError);
             b.Add(new Label("ビルド"));
-            b.SetEnabled(true);
             rootVisualElement.Add(b);
             return;
 
             void ClickEvent()
             {
-                var original = (buildAvatarToCheck.value as VRCAvatarDescriptor)!.gameObject;
+                GameObject original;
+                #if REPORT_ASSET_BUNDLE_SIZE_VRCSDK3A
+                if (buildAvatarToCheck.value is VRCAvatarDescriptor desc)
+                {
+                    original = desc.gameObject;
+                } else 
+                #endif
+                if (buildAvatarToCheck.value is GameObject go)
+                {
+                    original = go;
+                }
+                else
+                {
+                    throw new Exception("VRCAvatarDescriptor or GameObject is expected");
+                }
                 #if REPORT_ASSET_BUNDLE_SIZE_NDMF
                 // クローンすることでNDMFプラグインによって元々のゲームオブジェクトが破壊されることを防ぐ
                 var ad = GameObject.Instantiate(original);

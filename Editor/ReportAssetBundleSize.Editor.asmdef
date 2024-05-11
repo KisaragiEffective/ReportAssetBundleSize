@@ -9,6 +9,11 @@
       "name": "nadena.dev.ndmf",
       "define": "REPORT_ASSET_BUNDLE_SIZE_NDMF",
       "expression": ""
+    },
+    {
+      "name": "com.vrchat.avatars",
+      "define": "REPORT_ASSET_BUNDLE_SIZE_VRCSDK3A",
+      "expression": ""
     }
   ]
 }
