@@ -31,7 +31,7 @@ namespace ReportAssetBundleSize.Editor
         {
             var callPreBuiltHook = new Toggle("Call VRCSDK hooks")
                 { tooltip = "do you want NDMF or like-wise tools to run?", value = false };
-            #if REPORT_ASSET_BUNDLE_SIZE_VRCSDK3A
+            #if !REPORT_ASSET_BUNDLE_SIZE_VRCSDK3A
             callPreBuiltHook.SetEnabled(false);
             callPreBuiltHook.tooltip += " (This requires VRCSDK installation)";
             #endif
