@@ -163,6 +163,8 @@ namespace ReportAssetBundleSize.Editor
                     File.Delete(temporaryDirectory + "/../" + di.Name + ".meta");
                     di.Delete(true);
                 }
+                // シーンから除去しないとシーンにたまる
+                GameObject.DestroyImmediate(ad);
                 return;
 
                 void Build(string assetBundleName, BuildAssetBundleOptions opts, in TextField write)
