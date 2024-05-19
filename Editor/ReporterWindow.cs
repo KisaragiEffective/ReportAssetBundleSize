@@ -3,18 +3,18 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Object = UnityEngine.Object;
 #if REPORT_ASSET_BUNDLE_SIZE_VRCSDK3A
 using VRC.SDK3.Avatars.Components;
 using VRC.SDKBase.Editor.BuildPipeline;
 #endif
-using Object = UnityEngine.Object;
+#if REPORT_ASSET_BUNDLE_SIZE_NDMF
+using nadena.dev.modular_avatar.core.editor;
+#endif
 
 namespace ReportAssetBundleSize.Editor
 {
@@ -80,10 +80,24 @@ namespace ReportAssetBundleSize.Editor
                 b.SetEnabled(!absent);
             });
 
+            var runNDMF = new Toggle("Call Non-Destructive Modular Framework?")
+            {
+                tooltip = "Call Non-Destructive Modular Framework?"
+            };
+            #if REPORT_ASSET_BUNDLE_SIZE_VRCSDK3A
+            runNDMF.SetEnabled(false);
+            runNDMF.tooltip += "\n(NDMF is called via VRCSDK hook)";
+            callPreBuiltHook.RegisterValueChangedCallback(evt =>
+            {
+                runNDMF.value = evt.newValue;
+            });
+            #endif
+            
             rootVisualElement.Add(buildAvatarToCheck);
             rootVisualElement.Add(compressedSize);
             rootVisualElement.Add(decompressedSize);
             rootVisualElement.Add(callPreBuiltHook);
+            rootVisualElement.Add(runNDMF);
             // TODO: toggle visibility
             rootVisualElement.Add(absentAvatarError);
             b.Add(new Label("ビルド"));
@@ -117,10 +131,14 @@ namespace ReportAssetBundleSize.Editor
                 
                 if (callPreBuiltHook.value)
                 {
+                    #if REPORT_ASSET_BUNDLE_SIZE_VRCSDK3A
                     if (!VRCBuildPipelineCallbacks.OnPreprocessAvatar(ad))
                     {
                         throw new Exception("some of VRCSDK callback reports failure");
                     }
+                    #elif REPORT_ASSET_BUNDLE_SIZE_NDMF
+                    AvatarProcessor.ProcessAvatar(ad);
+                    #endif
                 }
                 
                 if (buildAvatarToCheck.value is null)

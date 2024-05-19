@@ -2,7 +2,8 @@
   "name": "ReportAssetBundleSize",
   "references": [
     "GUID:b906909fcc54f634db50f2cad0f988d9",
-    "GUID:6e9c6119ac4eb334284fb7b4bc6d1f05"
+    "GUID:6e9c6119ac4eb334284fb7b4bc6d1f05",
+    "GUID:5ce33783346c3124990afbe7b0390a06"
   ],
   "versionDefines": [
     {
