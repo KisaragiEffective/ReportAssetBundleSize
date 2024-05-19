@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -75,9 +76,11 @@ namespace ReportAssetBundleSize.Editor
             };
             buildAvatarToCheck.RegisterValueChangedCallback(cb =>
             {
-                var absent = cb.newValue == null;
-                absentAvatarError.style.display = absent ? DisplayStyle.Flex : DisplayStyle.None;
-                b.SetEnabled(!absent);
+                var invalid = cb.newValue == null;
+                
+                invalid = invalid || ExtractBuildTarget(cb.newValue) == null;
+                absentAvatarError.style.display = invalid ? DisplayStyle.Flex : DisplayStyle.None;
+                b.SetEnabled(!invalid);
             });
 
             var runNDMF = new Toggle("Call Non-Destructive Modular Framework?")
@@ -103,23 +106,30 @@ namespace ReportAssetBundleSize.Editor
             rootVisualElement.Add(b);
         }
 
+        [CanBeNull]
+        private static GameObject ExtractBuildTarget(Object buildCandidate)
+        {
+#if REPORT_ASSET_BUNDLE_SIZE_VRCSDK3A
+            if (buildCandidate is VRCAvatarDescriptor desc)
+            {
+                return desc.gameObject;
+            } else 
+#endif
+            if (buildCandidate is GameObject go)
+            {
+                return go;
+            }
+            
+            return null;
+        }
         private static void ClickEvent(ObjectField buildAvatarToCheck, Toggle callPreBuiltHook, TextField compressedSize, TextField decompressedSize, Toggle preserveBuiltBundles)
         {
-            GameObject original;
-            #if REPORT_ASSET_BUNDLE_SIZE_VRCSDK3A
-            if (buildAvatarToCheck.value is VRCAvatarDescriptor desc)
-            {
-                original = desc.gameObject;
-            } else 
-            #endif
-            if (buildAvatarToCheck.value is GameObject go)
-            {
-                original = go;
-            }
-            else
+            GameObject original = ExtractBuildTarget(buildAvatarToCheck.value);
+            if (original == null)
             {
                 throw new Exception("VRCAvatarDescriptor or GameObject is expected");
             }
+            
             #if REPORT_ASSET_BUNDLE_SIZE_NDMF
             // クローンすることでNDMFプラグインによって元々のゲームオブジェクトが破壊されることを防ぐ
             var ad = GameObject.Instantiate(original);
