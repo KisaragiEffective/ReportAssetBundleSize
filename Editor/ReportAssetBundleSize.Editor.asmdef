@@ -15,6 +15,11 @@
       "name": "com.vrchat.avatars",
       "define": "REPORT_ASSET_BUNDLE_SIZE_VRCSDK3A",
       "expression": ""
+    },
+    {
+      "name": "com.vrcfury.vrcfury",
+      "define": "REPORT_ASSET_BUNDLE_SIZE_VRCFURY",
+      "expression": ""
     }
   ]
 }

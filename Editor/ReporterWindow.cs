@@ -128,6 +128,11 @@ namespace ReportAssetBundleSize.Editor
                 // ReSharper disable once InlineTemporaryVariable
                 var ad = original;
                 #endif
+
+                #if REPORT_ASSET_BUNDLE_SIZE_VRCFURY
+                // remark: https://github.com/KisaragiEffective/ReportAssetBundleSize/issues/17
+                ad.name += " (Clone)";
+                #endif
                 
                 if (callPreBuiltHook.value)
                 {
