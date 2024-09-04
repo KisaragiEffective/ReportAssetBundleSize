@@ -13,9 +13,6 @@ using Object = UnityEngine.Object;
 using VRC.SDK3.Avatars.Components;
 using VRC.SDKBase.Editor.BuildPipeline;
 #endif
-#if REPORT_ASSET_BUNDLE_SIZE_NDMF
-using nadena.dev.modular_avatar.core.editor;
-#endif
 
 namespace ReportAssetBundleSize.Editor
 {
@@ -150,8 +147,9 @@ namespace ReportAssetBundleSize.Editor
                 {
                     throw new Exception("some of VRCSDK callback reports failure");
                 }
+                
                 #elif REPORT_ASSET_BUNDLE_SIZE_NDMF
-                AvatarProcessor.ProcessAvatar(ad);
+                nadena.dev.ndmf.AvatarProcessor.ProcessAvatar(ad);
                 #endif
             }
             
