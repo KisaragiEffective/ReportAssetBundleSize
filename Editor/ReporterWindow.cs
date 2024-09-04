@@ -135,12 +135,7 @@ namespace ReportAssetBundleSize.Editor
             var ad = original;
             #endif
 
-            #if REPORT_ASSET_BUNDLE_SIZE_VRCFURY
-            // remark: https://github.com/KisaragiEffective/ReportAssetBundleSize/issues/17
-            ad.name += " (Clone)";
-            #endif
-            
-            if (callPreBuiltHook.value)
+            if  (callPreBuiltHook.value)
             {
                 #if REPORT_ASSET_BUNDLE_SIZE_VRCSDK3A
                 if (!VRCBuildPipelineCallbacks.OnPreprocessAvatar(ad))
